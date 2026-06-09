@@ -1,17 +1,12 @@
-# Niryo One Digital Twin — Rebuild Study
+# Robot-Arm Digital Twin — Built From Scratch
 
-A study of a robot-arm digital twin built on ROS, CoppeliaSim and Docker, deployable across Edge, Fog and Cloud.
+A live virtual replica of a robot arm built on ROS, CoppeliaSim and Docker, deployable across Edge, Fog and Cloud.
 
-This is an independent **study rebuild**: a from-scratch GitHub Pages site I built to learn the
-tools behind the original project. It is **not a fork**, shares no commits with the original, and
-is **not affiliated** with the original author. All credit for the original work goes to **Milan Groshev (IE University)**.
+An original project I built from scratch to learn the tools behind it — my own code, writing and design.
+No templates, no forks.
 
 - **Live site:** https://andreaisabelmontana.github.io/niryo-one-digital-twin/
-- **Original project:** https://github.com/milangroshev/niryo-one-digital-twin
-
-## Why
-I'm working through projects from researchers I admire — robotics, HPC and tooling — and rebuilding
-a showcase/study of each from scratch to understand the toolchain rather than just reading about it.
+- **Index of all my builds:** https://andreaisabelmontana.github.io/researcher-rebuilds/
 
 ## Built with
 Plain HTML + CSS (no build step), Google Fonts (Fraunces / Inter / JetBrains Mono), deployed via GitHub Pages.

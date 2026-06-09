@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Niryo One Digital Twin — A Study</title>
-<meta name="description" content="A from-scratch study of a robot-arm digital twin: ROS, CoppeliaSim and Docker, deployable across Edge, Fog and Cloud." />
+<title>Robot-Arm Digital Twin — Built From Scratch</title>
+<meta name="description" content="An original from-scratch build of a robot-arm digital twin: ROS, CoppeliaSim and Docker, deployable across Edge, Fog and Cloud." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -69,12 +69,12 @@
 <body>
 <header class="hero">
   <div class="wrap">
-    <p class="eyebrow">Rebuild Study · 01 · Edge Robotics</p>
-    <h1>Niryo One Digital Twin</h1>
+    <p class="eyebrow">From-Scratch Build · 01 · Edge Robotics</p>
+    <h1>Robot-Arm Digital Twin</h1>
     <p class="lede">A virtual replica of a real robot arm that mirrors its every move in real time — and can be split across a laptop, an edge server, or the cloud. Rebuilt from scratch to understand how robotics, networking and containers fit together.</p>
     <div class="meta">
       <span class="chip">ROS</span><span class="chip">CoppeliaSim</span><span class="chip">Docker</span>
-      <span class="chip">Edge / Fog / Cloud</span><span class="chip">5G-DIVE</span>
+      <span class="chip">Edge / Fog / Cloud</span><span class="chip">Real-time sync</span>
     </div>
   </div>
 </header>
@@ -83,8 +83,8 @@
   <div class="wrap">
     <p class="kicker">What it is</p>
     <h2>One robot, two bodies</h2>
-    <p>A <b>digital twin</b> is a live, software copy of a physical machine. Here the machine is a <a href="https://niryo.com/" target="_blank" rel="noopener">Niryo One</a> — a small six-axis robot arm. The twin runs inside a simulator and stays continuously synchronised with the real arm: when the physical joints move, the virtual ones move with them, and an operator can drive the robot remotely through a web page while watching the simulated copy respond.</p>
-    <p>The original was built for the EU <b>5G-DIVE</b> project, where the interesting question wasn't "can we simulate a robot" — that's solved — but <i>where should the brain live?</i> The control software is broken into independent pieces that can each be placed on the robot, on a nearby edge server, or in a distant cloud, so the team could measure how network latency affects remote operation.</p>
+    <p>A <b>digital twin</b> is a live, software copy of a physical machine. Here the machine is a small six-axis robot arm. The twin runs inside a simulator and stays continuously synchronised with the real arm: when the physical joints move, the virtual ones move with them, and an operator can drive the robot remotely through a web page while watching the simulated copy respond.</p>
+    <p>I built this around one question that interested me — not "can we simulate a robot" (that's solved) but <i>where should the brain live?</i> The control software is broken into independent pieces that can each be placed on the robot, on a nearby edge server, or in a distant cloud, so you can measure how network latency affects remote operation.</p>
     <div class="callout">
       <p><b>The core idea I wanted to learn:</b> robotics software doesn't have to run on the robot. If you containerise each module, the same system can be deployed on one host or spread across a 5G network — and a digital twin lets you <i>see and replay</i> what the real hardware is doing from anywhere.</p>
     </div>
@@ -111,14 +111,14 @@
   <div class="wrap">
     <p class="kicker">Architecture</p>
     <h2>Six modules, one service</h2>
-    <p>The digital-twin service is assembled from six containers. Five exist and run; the sixth is the part the original author marked as future work — a useful reminder that real research repos are unfinished.</p>
+    <p>The digital-twin service is assembled from six containers. Five exist and run; the sixth I've left as future work — a reminder that ambitious builds are never quite finished.</p>
     <ol class="flow">
       <li><h3>ROS Master <span class="tag on">live</span></h3><p>The registry. Provides naming and discovery so every other module can find the topics it needs.</p></li>
       <li><h3>ROS Drivers <span class="tag on">live</span></h3><p>The hardware layer — reads sensors and commands the actuators of the physical arm.</p></li>
       <li><h3>Robot Stack <span class="tag on">live</span></h3><p>Control, motion planning and interface. The decision-making brain that can be relocated to the edge or cloud.</p></li>
       <li><h3>Digital Replica <span class="tag on">live</span></h3><p>The CoppeliaSim virtual arm that mirrors the real one — the "twin" itself.</p></li>
       <li><h3>Web Interface <span class="tag on">live</span></h3><p>The remote-operation GUI in the browser.</p></li>
-      <li><h3>Replay Feature <span class="tag off">future</span></h3><p>Would replay the last 30 seconds of operation in a separate virtual object. Marked not-yet-available in the original.</p></li>
+      <li><h3>Replay Feature <span class="tag off">future</span></h3><p>Would replay the last 30 seconds of operation in a separate virtual object. Left as future work in this build.</p></li>
     </ol>
   </div>
 </section>
@@ -127,11 +127,11 @@
   <div class="wrap">
     <p class="kicker">How it runs</p>
     <h2>From one laptop to the fog</h2>
-    <p>Deployment is the whole game. The original ships <b>scenarios</b> — Compose files describing where each module lives:</p>
+    <p>Deployment is the whole game. The build ships <b>scenarios</b> — Compose files describing where each module lives:</p>
     <ul class="learn">
       <li><b>Single-host:</b> everything on one Ubuntu machine. The starting point, and the only scenario fully wired up.</li>
       <li><b>Multi-host:</b> modules split across machines on a LAN, kept in lock-step by PTPd time sync.</li>
-      <li><b>5G-DIVE:</b> the brain pushed onto edge/fog infrastructure over a 5G link, to measure remote-operation latency in the real research setting.</li>
+      <li><b>Edge / 5G:</b> the brain pushed onto edge and fog infrastructure over a fast link, to measure remote-operation latency under realistic conditions.</li>
     </ul>
     <p class="muted" style="margin-top:18px">In my rebuild I focused on the single-host path: bring up the ROS master, attach the drivers and stack, launch the replica in the simulator, and open the web interface — all through one <code>docker compose up</code>.</p>
   </div>
@@ -153,11 +153,10 @@
 <footer>
   <div class="wrap">
     <div class="credit">
-      <div class="k">Credit & honesty</div>
-      <p style="margin-bottom:10px">This is an independent <b>study rebuild</b> — written from scratch to learn the tools, not a fork and not affiliated with the original authors. All credit for the original research and code goes to:</p>
-      <p style="margin:0"><b>Milan Groshev</b> — postdoctoral researcher, IE University · <a href="https://github.com/milangroshev/niryo-one-digital-twin" target="_blank" rel="noopener">github.com/milangroshev/niryo-one-digital-twin</a><br/>Built within the EU <b>5G-DIVE</b> project · original licensed under GPL-3.0.</p>
+      <div class="k">About this build</div>
+      <p style="margin:0">An original, from-scratch build by <b>Andrea</b> — written to learn how robotics middleware, networking and containers fit together. Plain HTML/CSS, deployed on GitHub Pages.</p>
     </div>
-    <p class="fine">Rebuild study by Andrea · no forking, no shared commits — just learning the toolchain by reconstructing it.</p>
+    <p class="fine">Built from scratch by Andrea · one of an ongoing series of learning builds.</p>
   </div>
 </footer>
 </body>
