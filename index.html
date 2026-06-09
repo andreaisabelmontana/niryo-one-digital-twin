@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Niryo One Digital Twin — A Study</title>
+<meta name="description" content="A from-scratch study of a robot-arm digital twin: ROS, CoppeliaSim and Docker, deployable across Edge, Fog and Cloud." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --accent:#0e9aa7; --accent-soft:#e6f6f7; --ink:#16201f; --muted:#5d6b69;
+    --line:#dfe5e3; --bg:#fbfcfb; --card:#ffffff;
+    --serif:'Fraunces',Georgia,serif; --sans:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:0 28px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code{font-family:var(--mono);font-size:.86em;background:var(--accent-soft);padding:.1em .4em;border-radius:4px;color:#0a6a73}
+  h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.15;letter-spacing:-.01em}
+  /* Header */
+  header.hero{padding:88px 0 56px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin:0 0 22px}
+  h1{font-size:clamp(2.6rem,6vw,4.1rem);margin:0 0 18px}
+  .lede{font-size:1.22rem;color:var(--muted);max-width:62ch;margin:0 0 28px}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;font-size:.82rem}
+  .chip{font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--muted);background:var(--card)}
+  /* Sections */
+  section{padding:54px 0;border-bottom:1px solid var(--line)}
+  .kicker{font-family:var(--mono);font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+  h2{font-size:clamp(1.7rem,3.4vw,2.3rem);margin:0 0 20px}
+  h3{font-size:1.2rem;margin:0 0 6px}
+  p{margin:0 0 18px;max-width:68ch}
+  .muted{color:var(--muted)}
+  /* Stack grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:8px}
+  .tool{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .tool .t{font-family:var(--mono);font-size:.78rem;color:var(--accent);letter-spacing:.04em;margin-bottom:8px}
+  .tool h3{font-size:1.05rem;font-family:var(--sans);font-weight:600;margin-bottom:6px}
+  .tool p{font-size:.92rem;color:var(--muted);margin:0}
+  /* Pipeline / modules */
+  ol.flow{counter-reset:s;list-style:none;padding:0;margin:24px 0 0}
+  ol.flow li{position:relative;padding:18px 0 18px 56px;border-top:1px solid var(--line)}
+  ol.flow li:before{counter-increment:s;content:counter(s,decimal-leading-zero);position:absolute;left:0;top:18px;font-family:var(--mono);font-size:.8rem;color:var(--accent);border:1px solid var(--line);border-radius:8px;width:38px;height:38px;display:grid;place-items:center;background:var(--card)}
+  ol.flow li h3{font-family:var(--sans);font-size:1.02rem;font-weight:600;margin:0 0 4px}
+  ol.flow li p{margin:0;font-size:.93rem;color:var(--muted)}
+  .tag{display:inline-block;font-family:var(--mono);font-size:.68rem;padding:2px 7px;border-radius:5px;margin-left:8px;vertical-align:middle}
+  .tag.on{background:#e6f7ec;color:#1c7a43}
+  .tag.off{background:#fdecea;color:#b23b2c}
+  /* Callout */
+  .callout{background:var(--accent-soft);border:1px solid #cdeaec;border-radius:14px;padding:24px 26px;margin-top:8px}
+  .callout p:last-child{margin:0}
+  /* Reflection list */
+  ul.learn{list-style:none;padding:0;margin:8px 0 0}
+  ul.learn li{padding:14px 0 14px 30px;border-top:1px solid var(--line);position:relative;color:var(--muted);max-width:68ch}
+  ul.learn li:before{content:"→";position:absolute;left:0;color:var(--accent);font-family:var(--mono)}
+  ul.learn li b{color:var(--ink);font-weight:600}
+  /* Footer */
+  footer{padding:48px 0 80px}
+  .credit{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px}
+  .credit .k{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+  footer .fine{font-size:.8rem;color:var(--muted);margin-top:22px;text-align:center}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Rebuild Study · 01 · Edge Robotics</p>
+    <h1>Niryo One Digital Twin</h1>
+    <p class="lede">A virtual replica of a real robot arm that mirrors its every move in real time — and can be split across a laptop, an edge server, or the cloud. Rebuilt from scratch to understand how robotics, networking and containers fit together.</p>
+    <div class="meta">
+      <span class="chip">ROS</span><span class="chip">CoppeliaSim</span><span class="chip">Docker</span>
+      <span class="chip">Edge / Fog / Cloud</span><span class="chip">5G-DIVE</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">What it is</p>
+    <h2>One robot, two bodies</h2>
+    <p>A <b>digital twin</b> is a live, software copy of a physical machine. Here the machine is a <a href="https://niryo.com/" target="_blank" rel="noopener">Niryo One</a> — a small six-axis robot arm. The twin runs inside a simulator and stays continuously synchronised with the real arm: when the physical joints move, the virtual ones move with them, and an operator can drive the robot remotely through a web page while watching the simulated copy respond.</p>
+    <p>The original was built for the EU <b>5G-DIVE</b> project, where the interesting question wasn't "can we simulate a robot" — that's solved — but <i>where should the brain live?</i> The control software is broken into independent pieces that can each be placed on the robot, on a nearby edge server, or in a distant cloud, so the team could measure how network latency affects remote operation.</p>
+    <div class="callout">
+      <p><b>The core idea I wanted to learn:</b> robotics software doesn't have to run on the robot. If you containerise each module, the same system can be deployed on one host or spread across a 5G network — and a digital twin lets you <i>see and replay</i> what the real hardware is doing from anywhere.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">The stack</p>
+    <h2>Tools under the hood</h2>
+    <p class="muted">The point of this rebuild was the toolchain. Each of these was new to me; here is what each one actually does in the system.</p>
+    <div class="grid">
+      <div class="tool"><div class="t">middleware</div><h3>ROS</h3><p>The Robot Operating System. Not an OS — a messaging bus. Nodes publish and subscribe to topics so the driver, planner and interface can talk without knowing about each other.</p></div>
+      <div class="tool"><div class="t">simulation</div><h3>CoppeliaSim</h3><p>A physics robot simulator that hosts the "digital replica" — the virtual arm whose joints are slaved to the real robot's state.</p></div>
+      <div class="tool"><div class="t">packaging</div><h3>Docker + Compose</h3><p>Every module ships as its own container. Compose wires them together, which is what makes the same stack deployable on one host or many.</p></div>
+      <div class="tool"><div class="t">timing</div><h3>PTPd</h3><p>Precision Time Protocol daemon. When modules run on different machines their clocks must agree to the microsecond, or the twin drifts out of sync.</p></div>
+      <div class="tool"><div class="t">control</div><h3>Motion planning</h3><p>The robot stack — control, motion planning and interface layers — turns "go here" into safe joint trajectories.</p></div>
+      <div class="tool"><div class="t">frontend</div><h3>Web interface</h3><p>A browser GUI for tele-operation, so an operator anywhere can drive the arm and watch the replica react.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">Architecture</p>
+    <h2>Six modules, one service</h2>
+    <p>The digital-twin service is assembled from six containers. Five exist and run; the sixth is the part the original author marked as future work — a useful reminder that real research repos are unfinished.</p>
+    <ol class="flow">
+      <li><h3>ROS Master <span class="tag on">live</span></h3><p>The registry. Provides naming and discovery so every other module can find the topics it needs.</p></li>
+      <li><h3>ROS Drivers <span class="tag on">live</span></h3><p>The hardware layer — reads sensors and commands the actuators of the physical arm.</p></li>
+      <li><h3>Robot Stack <span class="tag on">live</span></h3><p>Control, motion planning and interface. The decision-making brain that can be relocated to the edge or cloud.</p></li>
+      <li><h3>Digital Replica <span class="tag on">live</span></h3><p>The CoppeliaSim virtual arm that mirrors the real one — the "twin" itself.</p></li>
+      <li><h3>Web Interface <span class="tag on">live</span></h3><p>The remote-operation GUI in the browser.</p></li>
+      <li><h3>Replay Feature <span class="tag off">future</span></h3><p>Would replay the last 30 seconds of operation in a separate virtual object. Marked not-yet-available in the original.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">How it runs</p>
+    <h2>From one laptop to the fog</h2>
+    <p>Deployment is the whole game. The original ships <b>scenarios</b> — Compose files describing where each module lives:</p>
+    <ul class="learn">
+      <li><b>Single-host:</b> everything on one Ubuntu machine. The starting point, and the only scenario fully wired up.</li>
+      <li><b>Multi-host:</b> modules split across machines on a LAN, kept in lock-step by PTPd time sync.</li>
+      <li><b>5G-DIVE:</b> the brain pushed onto edge/fog infrastructure over a 5G link, to measure remote-operation latency in the real research setting.</li>
+    </ul>
+    <p class="muted" style="margin-top:18px">In my rebuild I focused on the single-host path: bring up the ROS master, attach the drivers and stack, launch the replica in the simulator, and open the web interface — all through one <code>docker compose up</code>.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">Reflection</p>
+    <h2>What rebuilding it taught me</h2>
+    <ul class="learn">
+      <li><b>ROS is plumbing, not magic.</b> Once you see it as a publish/subscribe bus, a robot becomes a set of small programs gossiping over topics — far less intimidating.</li>
+      <li><b>Containers turn "where does it run" into a config file.</b> The same modules, the same code, relocated from a robot to a cloud just by editing a Compose scenario. That is the actual contribution of the project.</li>
+      <li><b>Distributed systems need a shared clock.</b> PTPd looked like a footnote in the README; it's actually load-bearing once modules cross machine boundaries.</li>
+      <li><b>A digital twin is an observability tool.</b> Its value isn't the pretty 3D arm — it's being able to see, drive and (eventually) replay hardware you aren't standing next to.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="credit">
+      <div class="k">Credit & honesty</div>
+      <p style="margin-bottom:10px">This is an independent <b>study rebuild</b> — written from scratch to learn the tools, not a fork and not affiliated with the original authors. All credit for the original research and code goes to:</p>
+      <p style="margin:0"><b>Milan Groshev</b> — postdoctoral researcher, IE University · <a href="https://github.com/milangroshev/niryo-one-digital-twin" target="_blank" rel="noopener">github.com/milangroshev/niryo-one-digital-twin</a><br/>Built within the EU <b>5G-DIVE</b> project · original licensed under GPL-3.0.</p>
+    </div>
+    <p class="fine">Rebuild study by Andrea · no forking, no shared commits — just learning the toolchain by reconstructing it.</p>
+  </div>
+</footer>
+</body>
+</html>
